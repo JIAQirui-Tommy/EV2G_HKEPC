@@ -1,0 +1,10 @@
+pandas==2.0
+numpy==1.24
+numba==0.61
+networkx==3.0
+gymnasium==1.0
+matplotlib
+gurobipy
+pyyaml
+pandapower
+multicopula

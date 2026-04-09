@@ -1,0 +1,186 @@
+# Minimal wireless charging RL config.
+# Supports:
+# - Type 1: static wireless charging zones
+# - Type 2: zone-to-zone wireless movement
+
+##############################################################################
+# Simulation Parameters
+##############################################################################
+timescale: 15
+simulation_length: 112
+
+##############################################################################
+# Date and Time
+##############################################################################
+year: 2026
+month: 3
+day: 13
+random_day: False
+random_hour: False
+hour: 20
+minute: 0
+simulation_days: weekdays
+
+##############################################################################
+# EV Spawn Behavior
+##############################################################################
+scenario: workplace
+spawn_multiplier: 5
+ev_spawn_window:
+  weekday_start_hour: 5
+  weekday_end_hour: 23
+  weekend_enabled: True
+  weekend_start_hour: 8
+  weekend_end_hour: 22
+workplace_dual_peak:
+  enabled: True
+  evening_start_hour: 18
+  evening_end_hour: 23
+  source_shift_hours: 12
+  arrival_scale: 6.0
+  min_stay_hours: 10.0
+  min_energy_kwh: 14.0
+workplace_evening_v2g:
+  enabled: True
+  start_hour: 18
+  end_hour: 23
+  arrival_soc_min: 0.50
+  arrival_soc_max: 0.70
+
+##############################################################################
+# Prices
+##############################################################################
+price_data_file: ./Guangdong_Historical_Price_Mar09_15.csv
+discharge_price_factor: 1.30
+
+dynamic_price:
+  enabled: True
+  reference: heuristic
+  threshold_kw: 40
+  high_factor: 1.1
+  low_factor: 0.9
+
+##############################################################################
+# Wireless Charging
+##############################################################################
+wireless_charging:
+  enabled: True
+  number_of_zones: 6
+  zone_n_ports: 8
+  zone_max_charge_current: 32
+  zone_min_charge_current: 0
+  zone_max_discharge_current: -24
+  zone_min_discharge_current: 0
+  zone_voltage: 400
+  zone_phases: 3
+  movement_enabled: True
+  move_probability: 0.2
+  adjacent_only: True
+
+price_forecast:
+  enabled: True
+  horizon: 20
+  lookback: 48
+  model: lstm
+  hidden_size: 32
+  epochs: 200
+  lr: 0.001
+
+load_forecast:
+  enabled: True
+  file: ./load_forecast_result_hourly.xlsx
+  datetime_column: ds
+  value_column: yhat
+  target_peak_kw: 45
+
+##############################################################################
+# Distribution Network Settings
+##############################################################################
+v2g_enabled: True
+number_of_charging_stations: 6
+number_of_transformers: 1
+number_of_ports_per_cs: 8
+charging_network_topology: None
+
+simulate_grid: False
+network_info:
+  vm_pu: 1.0
+  s_base: 1000
+  load_multiplier: 1
+  pv_scale: 80
+  bus_info_file: './ev2gym/data/network_data/node_34/Nodes_34.csv'
+  branch_info_file: './ev2gym/data/network_data/node_34/Lines_34.csv'
+
+pf_solver: 'Laurent'
+
+##############################################################################
+# Power Setpoints Settings
+##############################################################################
+power_setpoint_enabled: False
+power_setpoint_flexiblity: 80
+
+##############################################################################
+# Inflexible Loads, Solar Generation, and Demand Response
+##############################################################################
+tr_seed: -1
+
+inflexible_loads:
+  include: True
+  inflexible_loads_capacity_multiplier_mean: 1
+  forecast_mean: 30
+  forecast_std: 5
+
+solar_power:
+  include: False
+  solar_power_capacity_multiplier_mean: 1
+  forecast_mean: 20
+  forecast_std: 5
+
+demand_response:
+  include: False
+  events_per_day: 1
+  event_capacity_percentage_mean: 35
+  event_capacity_percentage_std: 5
+  event_length_minutes_min: 60
+  event_length_minutes_max: 60
+  event_start_hour_mean: 12
+  event_start_hour_std: 2
+  notification_of_event_minutes: 60
+
+##############################################################################
+# EV Specifications
+##############################################################################
+heterogeneous_ev_specs: True
+ev_specs_file: ./ev2gym/data/ev_specs_v2g_enabled2024.json
+
+##############################################################################
+# Default Model values
+##############################################################################
+transformer:
+  max_power: 100
+
+charging_station:
+  min_charge_current: 0
+  max_charge_current: 32
+  min_discharge_current: 0
+  max_discharge_current: -32
+  voltage: 400
+  phases: 3
+
+ev:
+  battery_capacity: 50
+  max_ac_charge_power: 11
+  min_ac_charge_power: 0
+  max_dc_charge_power: 50
+  max_discharge_power: -11
+  min_discharge_power: 0
+  ev_phases: 3
+  charge_efficiency: 1
+  discharge_efficiency: 1
+  transition_soc: 1
+
+  min_battery_capacity: 5
+  min_time_of_stay: 180
+  min_emergency_battery_capacity: 25
+  desired_capacity: 0.45
+  transition_soc_multiplier: 5
